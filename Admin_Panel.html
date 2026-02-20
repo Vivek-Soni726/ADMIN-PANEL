@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="style.css">
+  <title>Minimalist Admin Panel</title>
+  <style>
+    .card {
+      height: 30rem;
+    }
+
+    /* --- Edit Button --- */
+    .card .edit {
+      color: #10B981;
+      /* Professional Emerald Green */
+      transform: translateY(-3px);
+      border-radius: 25px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      /* Subtle border for structure */
+      background-color: transparent;
+      height: 2.8rem;
+      width: 10rem;
+      /* Adjusted slightly for better card fit */
+      display: inline-flex;
+      /* Use flex to align icon/text */
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      /* Smooth color change */
+    }
+
+    .card .edit:hover {
+      background-color: #10B981;
+      color: #ffffff;
+      border-color: #10B981;
+    }
+
+    .edit i {
+      font-size: 1.5rem;
+      opacity: 0.8;
+    }
+
+    /* --- Delete Button --- */
+    .card .delete {
+      color: #EF4444;
+      /* Modern soft red */
+      transform: translateY(-3px);
+      border-radius: 25px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      background-color: transparent;
+      height: 2.8rem;
+      width: 10rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .card .delete:hover {
+      background-color: #EF4444;
+      color: #ffffff;
+      border-color: #EF4444;
+    }
+
+    .delete i {
+      font-size: 1.5rem;
+      opacity: 0.8;
+    }
+
+    /* Ensure icons turn white on hover */
+    .card .edit:hover i,
+    .card .delete:hover i {
+      opacity: 1;
+      color: #ffffff;
+    }
+
+    /* Your Active Button Style */
+    .active-btn {
+      background-color: #4C1D95 !important;
+      color: white !important;
+      border-left: 0px solid transparent !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="icon"><i class="fa-solid fa-warehouse"></i>STOCK MANAGEMENT</div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <button id="dashboard" data-target="dashboard" class="active-btn">
+        <i class="fa-solid fa-house"></i>Dashboard
+      </button>
+
+      <button id="user" data-target="user">
+        <i class="fa-solid fa-user-group"></i>User Management
+      </button>
+
+      <button id="shop" data-target="shop">
+        <i class="fa-solid fa-shop"></i>Shop Management
+      </button>
+
+      <button id="category" data-target="category">
+        <i class="fa-solid fa-layer-group"></i>Categories
+      </button>
+
+      <button id="product" data-target="product">
+        <i class="fa-solid fa-box-open"></i>Product
+      </button>
+
+      <button id="report" data-target="report">
+        <i class="fa-solid fa-chart-line"></i>Reports
+      </button>
+    </div>
+    <div style="align-items: center; justify-content: center; width: 98%;" class="panel">
+      <div class="dashboard visible">
+        <div class="div1">
+          <div>
+            <div>
+              <div style="display: flex; flex-direction: column; width: 50%; height: 4rem;">
+                <p style="font-size: rem;">Total Products</p>
+                <p id="total_product"></p>
+              </div>
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+          </div>
+
+          <div>
+            <div>
+              <div style="display: flex; flex-direction: column; width: 50%; height: 4rem;">
+                <p style="font-size: rem;">Total Categories</p>
+                <p id="total_category"></p>
+              </div>
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+          </div>
+
+          <div>
+            <div>
+              <div style="display: flex; flex-direction: column; width: 50%; height: 4rem;">
+                <p style="font-size: rem;">Stock Alert</p>
+                <p id="stock_alert"></p>
+              </div>
+              <i class="fa-solid fa-triangle-exclamation" style="color:red;"></i>
+            </div>
+          </div>
+
+          <div>
+            <div>
+              <div style="display: flex; flex-direction: column; width: 50%; height: 4rem;">
+                <p style="font-size: rem;">Inventory Value</p>
+                <p id="inventory_value"></p>
+              </div>
+              <i class="fa-solid fa-coins"></i>
+            </div>
+          </div>
+
+        </div>
+        <div class="Chart">
+          <div class="barchart"><canvas id="myChart"></canvas></div>
+          <div class="piechart"><canvas id="myChart2"></canvas></div>
+        </div>
+
+      </div>
+
+      <!-- -----------------USER PANEL---------------- -->
+      <div class="user hidden">
+        <div class="filter">
+          <select id="shopselect">
+          </select>
+        </div>
+
+        <div class="user-card">
+        </div>
+      </div>
+
+      <!-- -----------------SHOP PANEL---------------- -->
+      <div class="shop hidden">
+        <div class="shop-card">
+        </div>
+      </div>
+
+      <!-- -----------------CATEGORY PANEL---------------- -->
+      <div class="category hidden">
+        <div class="category-card"
+          style="width:98%; padding:2rem; display: grid; grid-template-columns: repeat(5, 1fr); overflow-y: auto; gap: 20px;">
+        </div>
+      </div>
+
+      <!-- -----------------PRODUCT PANEL---------------- -->
+      <div class="product hidden">
+        <div class="filter">
+          <select id="categorySelect"></select>
+        </div>
+
+        <div class="product-card"
+          style="width:98%; padding:2rem; display: grid; grid-template-columns: repeat(5, 1fr); overflow-y: auto; gap: 20px;">
+        </div>
+      </div>
+
+      <!-- -----------------REPORT PANEL---------------- -->
+      <div class="report hidden" style="font-size: 50px;">
+
+
+      </div>
+
+
+    </div>
+  </div>
+
+
+
+
+  <!--------------------------------------------USER UPDATE FORM ----------------------------------- -->
+  <div id="editUserModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:white; padding:2rem; border-radius:20px; width:450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <h2 style="color:#4C1D95; margin-bottom: 20px;">Update User Details</h2>
+      <form id="editUserForm">
+        <input type="hidden" id="edit_user_id" name="user_id">
+
+        <div style="margin-bottom:15px;">
+          <label style="font-weight:bold; color:grey;">Full Name</label><br>
+          <input type="text" id="edit_user_name" name="user_name"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="font-weight:bold; color:grey;">Address</label><br>
+          <textarea id="edit_user_address" name="user_address"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" rows="3"
+            required></textarea>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="font-weight:bold; color:grey;">Contact Number</label><br>
+          <input type="text" id="edit_user_contact" name="user_contact"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button type="button" onclick="closeUserModal()"
+            style="padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer;">Cancel</button>
+          <button type="submit"
+            style="padding:10px 25px; background:#4C1D95; color:white; border:none; border-radius:8px; cursor:pointer;">
+            Update User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--------------------------------------------ADD USER FORM ----------------------------------- -->
+  <div id="addUserModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:white; padding:2rem; border-radius:20px; width:450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <h2 style="color:#4C1D95; margin-bottom: 20px;">Register New User</h2>
+      <form id="addUserForm">
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:bold; color:grey;">Full Name</label>
+          <input type="text" id="add_user_name" name="user_name"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:bold; color:grey;">Address</label>
+          <textarea id="add_user_address" name="user_address"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" rows="2"
+            required></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:bold; color:grey;">Contact Number</label>
+          <input type="text" id="add_user_contact" name="user_contact"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+
+        <div style="margin-bottom:12px; display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-weight:bold; color:grey;">Role</label>
+            <select id="add_user_role" name="role_id"
+              style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="font-weight:bold; color:grey;">Assign Shop</label>
+            <select id="add_user_shop" name="shop_id"
+              style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;">
+          <button type="button" onclick="closeAddModal()"
+            style="padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer;">Cancel</button>
+          <button type="submit"
+            style="padding:10px 25px; background:#4C1D95; color:white; border:none; border-radius:8px; cursor:pointer;">
+            Save User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--------------------------------------------ADD SHOP FORM ----------------------------------- -->
+  <div id="shopModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:white; padding:2rem; border-radius:20px; width:400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <h2 id="modalTitle" style="color:#4C1D95; margin-bottom: 20px;">Add New Shop</h2>
+
+      <form id="shopForm">
+        <input type="hidden" id="modal_shop_id" name="shop_id">
+
+        <div style="margin-bottom:15px;">
+          <label style="font-weight:bold; color:grey;">Shop Name</label>
+          <input type="text" id="modal_shop_name" name="shop_name"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="font-weight:bold; color:grey;">Shop Address</label>
+          <textarea id="modal_shop_address" name="shop_address"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" rows="3"
+            required></textarea>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button type="button" onclick="closeShopModal()"
+            style="padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer;">Cancel</button>
+          <button type="submit"
+            style="padding:10px 25px; background:#4C1D95; color:white; border:none; border-radius:8px; cursor:pointer;">
+            Save Shop
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--------------------------------------------ADD and UPDATE CATEGORY FORM ----------------------------------- -->
+  <div id="categoryModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:white; padding:2rem; border-radius:20px; width:400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <h2 id="catModalTitle" style="color:#4C1D95; margin-bottom: 20px;">Add Category</h2>
+      <form id="categoryForm">
+        <input type="hidden" id="modal_cat_id">
+
+        <div style="margin-bottom:20px;">
+          <label style="font-weight:bold; color:grey;">Category Name</label>
+          <input type="text" id="modal_cat_name"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;"
+            placeholder="e.g. Beverages, Snacks" required>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button type="button" onclick="closeCatModal()"
+            style="padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer;">Cancel</button>
+          <button type="submit"
+            style="padding:10px 25px; background:#4C1D95; color:white; border:none; border-radius:8px; cursor:pointer;">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!----------------------------------------------ADD and UPDATE PRODUCTS FORM ------------------------------- -->
+  <div id="productModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:white; padding:2rem; border-radius:20px; width:400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <h2 id="prodModalTitle" style="color:#4C1D95; margin-bottom: 20px;">Add New Product</h2>
+
+      <form id="productForm">
+        <input type="hidden" id="modal_prod_id" name="product_id">
+
+        <div style="margin-bottom:15px;">
+          <label style="font-weight:bold; color:grey;">Product Name</label>
+          <input type="text" id="modal_prod_name" name="product_name"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="font-weight:bold; color:grey;">Price (₹)</label>
+          <input type="number" step="0.01" id="modal_prod_price" name="product_price"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="font-weight:bold; color:grey;">Category</label>
+          <select id="modal_prod_cat" name="cat_id"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
+          </select>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button type="button" onclick="closeProductModal()"
+            style="padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer;">Cancel</button>
+          <button type="submit"
+            style="padding:10px 25px; background:#4C1D95; color:white; border:none; border-radius:8px; cursor:pointer;">
+            Save Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-------------------------- CHARTS ----------------------- -->
+  <script>
+    // Get canvas context
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    // Fetch data from PHP backend
+    fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCharts.php')
+      .then(response => response.json())
+      .then(data => createChart(data.sales, 'bar')); // ✅ use data.sales
+
+    // Chart creation function
+    function createChart(chartdata, type) {
+      new Chart(ctx, {
+        type: type,
+        data: {
+          labels: chartdata.map(row => row.Product_name),
+          datasets: [{
+            label: 'Total Quantity Sold',
+            data: chartdata.map(row => row.TotalQuantityMoved),
+            borderWidth: 1,
+            backgroundColor: '#6EB8E1',
+            borderColor: '#1F2937'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Product Wise Sales Performance',
+              font: { size: 18 }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          animation: {
+            duration: 1500,
+            easing: 'easeOutBounce'
+          }
+        }
+      });
+    }
+
+    // Get canvas context
+    const cx = document.getElementById('myChart2').getContext('2d');
+
+    // Fetch data from PHP backend
+    fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCharts.php')
+      .then(response => response.json())
+      .then(data => {
+        // Use the stock array from JSON
+        const stockData = data.stock;
+
+        new Chart(cx, {
+          type: 'doughnut',
+          data: {
+            labels: stockData.map(row => row.Product_name), // ✅ product names
+            datasets: [{
+              label: 'Current Stock',
+              data: stockData.map(row => row.CurrentStock), // ✅ stock values
+              backgroundColor: [
+                '#6EB8E1',
+                '#C8ABE6',
+                '#D6E6F2',
+                '#bbbbbb',
+                '#1F2937',
+                '#374151'
+              ]
+            }]
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: 'Product Wise Quantity',
+                font: { size: 18 }
+              }
+            }
+          }
+        });
+      }); 
+  </script>
+  <!-- ----------------- SIDEBAR -------------------------- -->
+  <script>
+    // Select all buttons inside the sidebar
+    const sidebarBtns = document.querySelectorAll('.sidebar button');
+    // Select all main panels
+    const allPanels = document.querySelectorAll('.panel > div');
+
+    sidebarBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+
+        // 1. Remove active class from all buttons and add to clicked one
+        sidebarBtns.forEach(b => b.classList.remove('active-btn'));
+        btn.classList.add('active-btn');
+
+        // 2. Hide all panels and show the targeted one
+        allPanels.forEach(panel => {
+          if (panel.classList.contains(target)) {
+            panel.classList.remove('hidden');
+            panel.classList.add('visible');
+          } else {
+            panel.classList.add('hidden');
+            panel.classList.remove('visible');
+          }
+        });
+      });
+    });
+  </script>
+
+
+
+  <!------------------- Product and Category Count ---------------------->
+  <script>
+    let count_product = document.getElementById('total_product');
+    let count_category = document.getElementById('total_category');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/count_product.php')
+        .then(response => response.json())
+        .then(data => {
+          // COUNT() always returns one row, so just take the first element
+          const product = data[0]['product_count'];
+          count_product.textContent = product; // show it in your element
+        })
+        .catch(err => console.error(err));
+
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/count_category.php')
+        .then(response => response.json())
+        .then(data => {
+          // COUNT() always returns one row, so just take the first element
+          const category = data[0]['category_count'];
+          count_category.textContent = category; // show it in your element
+        })
+        .catch(err => console.error(err));
+    });
+  </script>
+
+  <!---------------- Stock Alerts ---------------->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getStockAlert.php')
+        .then(response => response.json())
+        .then(data => {
+          let stock_alerts = data[0]['stock_alert'];
+          let stock_alert = document.getElementById('stock_alert');
+          stock_alert.textContent = stock_alerts;
+        });
+    });
+  </script>
+
+  <!-------------- Inventory Value ------------------->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getInventory.php')
+        .then(response => response.json())
+        .then(data => {
+          let inventory_values = data[0]['inventory_value'];
+          let inventory_value = document.getElementById('inventory_value');
+          inventory_value.textContent = `\u20B9${inventory_values}`;
+        });
+    });
+  </script>
+
+
+  <!-- --------<select> FOR USER PANEL------------- -->
+  <script>
+    const shopSelect = document.getElementById('shopselect');
+    const userCard = document.querySelector('.user-card');
+
+    // Load shops into dropdown
+    const loadShops = () => {
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getShop.php')
+        .then(res => res.json())
+        .then(data => {
+          let options = '<option value="">---Select Shop---</option>';
+          data.forEach(shop => {
+            options += `<option value="${shop.Shop_id}">${shop.Shop_name}</option>`;
+          });
+          shopSelect.innerHTML = options;
+        })
+        .catch(err => console.error('Error loading shops:', err));
+    };
+
+    // Load users (all if no shopId given)
+    const loadUsers = (shopId = null) => {
+      // Basic validation to ignore the default "---Select Shop---" option
+      let url = 'http://localhost/vicky/College%20Project/ADMIN%20PANEL/getUser.php';
+      if (shopId && shopId !== "") {
+        url += `?shop_id=${shopId}`;
+      }
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          // Start with the "Add User" button
+          let html = `
+                <div class="card userbtn">
+                    <button class="add-user" onclick="addUser()">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>`;
+
+          data.forEach(user => {
+            // We add a unique ID to the div (user-card-5) to target it later
+            html += `
+                <div class="card" id="user-card-${user.User_id}">
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <i style="font-size: 12rem; border-radius: 50%; width: 15rem; height:15rem; color: rgba(0, 0, 0, 0.3);" class="fa-solid fa-user"></i>
+                    </div>
+                    <div style="transform: translateY(-9px); font-weight: 600; font-size: 1.3rem; color: grey; display: flex; flex-direction: column; justify-content: space-evenly; text-align: left; width: 100%; height: 40%;">
+                        <p>Shop : ${user.Shop_name}</p>
+                        <p>Name : ${user.User_name}</p>
+                        <p>User ID : ${user.User_id}</p>
+                        <p>Address : ${user.User_address}</p>
+                        <p>Contact No. : ${user.User_contact}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: row; justify-content: space-around; gap: 10px;">
+                        <button onclick="editItem(${user.User_id}, 'user')" class="edit">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </button>
+                        <button onclick="deleteItem(${user.User_id}, 'user')" class="delete">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+          });
+          userCard.innerHTML = html;
+        })
+        .catch(err => {
+          console.error('Error loading users:', err);
+          userCard.innerHTML = "<p>Error loading data.</p>";
+        });
+    };
+
+    // Handle Shop filter change
+    shopSelect.addEventListener('change', (e) => {
+      loadUsers(e.target.value);
+    });
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadShops();
+      loadUsers();
+    });
+  </script>
+  <!-- -------------- USER PANEL ------------------->
+  <script>
+    /**
+     * 1. DELETE USER (With Vanish Animation)
+     */
+    function deleteItem(id, type) {
+      if (type !== 'user') return;
+
+      if (confirm(`Are you sure you want to delete this user?`)) {
+        // Use %20 for the space in "ADMIN PANEL"
+        const url = `http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteUser.php?user_id=${id}`;
+
+        fetch(url)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const card = document.getElementById(`user-card-${id}`);
+              if (card) {
+                // Lock card and trigger the Vanish Effect
+                card.style.pointerEvents = "none";
+                card.style.transition = "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+                card.style.transform = "scale(0.3) translateY(30px)";
+                card.style.opacity = "0";
+                card.style.filter = "blur(10px)";
+
+                setTimeout(() => {
+                  card.remove();
+                }, 500);
+              }
+            } else {
+              alert("Error: " + data.message);
+            }
+          })
+          .catch(err => console.error("Delete failed:", err));
+      }
+    }
+
+    /**
+     * 2. EDIT USER LOGIC
+     */
+    const editItem = (userId, type) => {
+      if (type !== 'user') return;
+
+      const card = document.getElementById(`user-card-${userId}`);
+      if (!card) return;
+
+      // Smart extraction: Look for labels within the card text
+      const getText = (label) => {
+        const paragraphs = Array.from(card.querySelectorAll('p'));
+        const target = paragraphs.find(p => p.innerText.includes(label));
+        return target ? target.innerText.split(' : ')[1].trim() : '';
+      };
+
+      // Fill the Edit Modal inputs using the IDs from your HTML
+      document.getElementById('edit_user_id').value = userId;
+      document.getElementById('edit_user_name').value = getText('Name');
+      document.getElementById('edit_user_address').value = getText('Address');
+      document.getElementById('edit_user_contact').value = getText('Contact No.');
+
+      document.getElementById('editUserModal').style.display = 'flex';
+    };
+
+    const closeUserModal = () => {
+      document.getElementById('editUserModal').style.display = 'none';
+    };
+
+    // Handle Update Submission
+    document.getElementById('editUserForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this); // Automatically grabs user_id, user_name, etc.
+
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/updateUser.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("User updated successfully!");
+            closeUserModal();
+            // Refresh list based on the current shop filter
+            loadUsers(document.getElementById('shopselect').value);
+          } else {
+            alert("Update Error: " + data.message);
+          }
+        })
+        .catch(err => console.error("Update request failed:", err));
+    });
+
+    /**
+     * 3. ADD USER LOGIC
+     */
+    const addUser = () => {
+      // 1. Load Roles for the dropdown
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getRoles.php')
+        .then(res => res.json())
+        .then(roles => {
+          let roleHtml = '<option value="">--Select Role--</option>';
+          roles.forEach(role => {
+            roleHtml += `<option value="${role.Role_id}">${role.Role_name}</option>`;
+          });
+          document.getElementById('add_user_role').innerHTML = roleHtml;
+        })
+        .catch(err => console.error("Roles could not be loaded:", err));
+
+      // 2. Reuse the shop options from your main shop filter
+      const mainShopSelect = document.getElementById('shopselect');
+      document.getElementById('add_user_shop').innerHTML = mainShopSelect.innerHTML;
+
+      document.getElementById('addUserModal').style.display = 'flex';
+    };
+
+    const closeAddModal = () => {
+      document.getElementById('addUserModal').style.display = 'none';
+      document.getElementById('addUserForm').reset();
+    };
+
+    // Handle Add Submission
+    document.getElementById('addUserForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/addUser.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("New user registered successfully!");
+            closeAddModal();
+            loadUsers(document.getElementById('shopselect').value);
+          } else {
+            alert("Add Error: " + data.message);
+          }
+        })
+        .catch(err => console.error("Registration failed:", err));
+    });
+  </script>
+
+  <!-------------- SHOP PANEL ----------------------->
+  <script>
+    let shopCard = document.querySelector('.shop-card');
+
+    /**
+     * 1. LOAD ALL SHOPS
+     */
+    const loadAllShops = () => {
+      // Use %20 for spaces in the URL
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/allShop.php')
+        .then(response => response.json())
+        .then(data => {
+          let html = `
+                <div class="card userbtn">
+                    <button class="add-user" onclick="addUser()">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>`;
+
+          data.forEach(shop => {
+            html += `
+                <div class="card" id="shop-card-${shop.Shop_id}">
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <i style="font-size: 12rem; border-radius: 50%; width: 15rem; height:15rem; color: rgba(0, 0, 0, 0.3);" class="fa-solid fa-shop"></i>
+                    </div>
+                    
+                    <div style="transform: translateY(-9px); font-weight: 600; font-size: 1.3rem; color: grey; display: flex; flex-direction: column; justify-content: space-evenly; text-align: left; width: 100%; height: 40%;">
+                        <p>Shop ID : ${shop.Shop_id}</p>
+                        <p>Name : ${shop.Shop_name}</p>
+                        <p>Shop Address : ${shop.Shop_address}</p>
+                        <p>Owner Name : ${shop.User_name}</p>
+                        <p>Contact No. : ${shop.User_contact}</p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: space-around; gap: 10px;">
+                        <button onclick="editShop(${shop.Shop_id})" class="edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deleteShop(${shop.Shop_id})" class="delete">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+          });
+          shopCard.innerHTML = html;
+        })
+        .catch(err => console.error("Error loading shops:", err));
+    }
+
+    /**
+     * 2. UPDATED DELETE FUNCTION (With Vanish Animation)
+     */
+    const deleteShop = (shopId) => {
+      if (confirm("Are you sure you want to delete this shop?")) {
+        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteShop.php?shop_id=${shopId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const element = document.getElementById(`shop-card-${shopId}`);
+              if (element) {
+                // Apply the smooth Vanish effect
+                element.style.pointerEvents = "none";
+                element.style.transition = "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+                element.style.transform = "scale(0.3) translateY(30px)";
+                element.style.opacity = "0";
+                element.style.filter = "blur(10px)";
+
+                setTimeout(() => {
+                  element.remove();
+                }, 500);
+              }
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch(err => console.error("Delete failed:", err));
+      }
+    }
+
+    /**
+     * 3. MODAL CONTROLS
+     */
+    const addShop = () => {
+      document.getElementById('modalTitle').innerText = "Add New Shop";
+      document.getElementById('modal_shop_id').value = "";
+      document.getElementById('shopForm').reset();
+      document.getElementById('shopModal').style.display = 'flex';
+    };
+
+    const editShop = (shopId) => {
+      document.getElementById('modalTitle').innerText = "Edit Shop Details";
+      const card = document.getElementById(`shop-card-${shopId}`);
+
+      const getText = (label) => {
+        const paragraphs = Array.from(card.querySelectorAll('p'));
+        const target = paragraphs.find(p => p.innerText.includes(label));
+        return target ? target.innerText.split(' : ')[1].trim() : '';
+      };
+
+      document.getElementById('modal_shop_id').value = shopId;
+      document.getElementById('modal_shop_name').value = getText('Name');
+      document.getElementById('modal_shop_address').value = getText('Shop Address');
+
+      document.getElementById('shopModal').style.display = 'flex';
+    };
+
+    const closeShopModal = () => {
+      document.getElementById('shopModal').style.display = 'none';
+    };
+
+    /**
+     * 4. FIXED FORM SUBMISSION (ADD/UPDATE)
+     */
+    document.getElementById('shopForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // 1. Get the shopId to check if it's an update or new add
+      const shopId = document.getElementById('modal_shop_id').value;
+
+      // 2. Use 'this' to automatically gather all form inputs
+      const formData = new FormData(this);
+
+      // 3. Encode the URL correctly with %20
+      const url = 'http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveShop.php';
+
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(shopId ? "Shop updated!" : "Shop added successfully!");
+            closeShopModal();
+            loadAllShops();
+          } else {
+            alert("Error: " + data.message);
+          }
+        })
+        .catch(err => {
+          console.error("Submission failed:", err);
+          alert("Connection error. Please check if your PHP server is running.");
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', loadAllShops);
+  </script>
+
+  <!-------------- CATEGORY PANEL  ------------------->
+  <script>
+    /**
+     * 1. LOAD & DISPLAY CATEGORIES
+     */
+    const refreshCategoryList = () => {
+      const container = document.querySelector('.category-card');
+      if (!container) return;
+
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCategory.php')
+        .then(res => res.json())
+        .then(data => {
+          // 1. "Add" button card (Matches exactly)
+          let html = `
+            <div class="card userbtn">
+	            <button class="add-user" onclick="addUser()">
+		            <i class="fa-solid fa-plus"></i>
+	            </button>
+            </div>`;
+
+          data.forEach(cat => {
+            // 2. Category Card (Exact structure as Shop/User)
+            html += `
+          <div class="card" id="cat-card-${cat.Cat_id}">
+              <div style="display: flex; align-items: center; justify-content: center;">
+ 
+                  <i style="font-size: 12rem; border-radius: 50%; width: 15rem; height:15rem; color: rgba(0, 0, 0, 0.3);" class="fa-solid fa-layer-group"></i>
+              </div>
+              
+              <div style="transform: translateY(-9px); font-weight: 600; font-size: 1.3rem; color: grey; display: flex; flex-direction: column; justify-content: space-evenly; text-align: left; width: 100%; height: 40%;">
+                  <p>Category ID : ${cat.Cat_id}</p>
+                  <p>Name : ${cat.Cat_name}</p>
+                  <p>No. of Products : ${cat.no_of_product}</p>
+              </div>
+
+              <div  style="display: flex; flex-direction: row; justify-content: space-around; gap: 10px;">
+                  <button onclick="prepareCategoryEdit(${cat.Cat_id}, '${cat.Cat_name}')" class="edit">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button onclick="handleCategoryDelete(${cat.Cat_id})" class="delete">
+                      <i class="fa-solid fa-trash-can"></i>
+                  </button>
+              </div>
+          </div>`;
+          });
+          container.innerHTML = html;
+        })
+        .catch(err => console.error("Error fetching categories:", err));
+    };
+
+    /**
+     * 2. DELETE LOGIC (With Vanish Animation)
+     */
+    const handleCategoryDelete = (id) => {
+      const confirmMsg = "Are you sure? You must delete every product related to this category first.";
+
+      if (confirm(confirmMsg)) {
+        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteCategory.php?cat_id=${id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const element = document.getElementById(`cat-card-${id}`);
+              if (element) {
+                // Apply the smooth Vanish effect to match other panels
+                element.style.pointerEvents = "none";
+                element.style.transition = "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+                element.style.transform = "scale(0.3) translateY(30px)";
+                element.style.opacity = "0";
+                element.style.filter = "blur(10px)";
+
+                setTimeout(() => {
+                  element.remove();
+                }, 500);
+              }
+            } else {
+              alert(data.message); // Shows "Cannot delete! This category has X products..."
+            }
+          })
+          .catch(err => console.error("Delete operation failed:", err));
+      }
+    };
+
+    /**
+     * 3. MODAL & FORM LOGIC
+     */
+    const openCategoryModal = () => {
+      document.getElementById('catModalTitle').innerText = "Add Category";
+      document.getElementById('modal_cat_id').value = "";
+      document.getElementById('categoryForm').reset();
+      document.getElementById('categoryModal').style.display = 'flex';
+    };
+
+    const closeCatModal = () => {
+      document.getElementById('categoryModal').style.display = 'none';
+    };
+
+    const prepareCategoryEdit = (id, name) => {
+      document.getElementById('catModalTitle').innerText = "Update Category";
+      document.getElementById('modal_cat_id').value = id;
+      document.getElementById('modal_cat_name').value = name;
+      document.getElementById('categoryModal').style.display = 'flex';
+    };
+
+    document.getElementById('categoryForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const catId = document.getElementById('modal_cat_id').value;
+      const formData = new FormData();
+      formData.append('cat_name', document.getElementById('modal_cat_name').value);
+      if (catId) formData.append('cat_id', catId);
+
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveCategory.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            closeCatModal();
+            refreshCategoryList();
+          } else {
+            alert(data.message);
+          }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', refreshCategoryList);
+  </script>
+
+  <!------------------ PRODUCT PANEL ------------------>
+  <script>
+    // Global references
+    const categorySelect = document.getElementById('categorySelect');
+    const productCardContainer = document.querySelector('.product-card');
+
+    /**
+     * 1. LOAD CATEGORIES (Dropdown Sync)
+     * Fetches categories for both the filter and the modal dropdown.
+     */
+    const loadCategories = () => {
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCategory.php')
+        .then(res => res.json())
+        .then(data => {
+          let options = '<option value="">---Select Category---</option>';
+          data.forEach(category => {
+            options += `<option value="${category.Cat_id}">${category.Cat_name}</option>`;
+          });
+          // Fill the main filter
+          categorySelect.innerHTML = options;
+          // Fill the modal dropdown
+          document.getElementById('modal_prod_cat').innerHTML = options;
+        })
+        .catch(err => console.error("Category Load Error:", err));
+    };
+
+    /**
+     * 2. SHOW PRODUCTS
+     * Fetches products and renders the cards with the exact CSS layout.
+     */
+    const loadProducts = (Cat_id = null) => {
+      let url = 'http://localhost/vicky/College%20Project/ADMIN%20PANEL/getProduct.php';
+      if (Cat_id) url += `?Cat_id=${Cat_id}`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          // "Add Product" card
+          let html = `
+                  <div class="card userbtn">
+	                  <button class="add-user" onclick="addUser()">
+		                  <i class="fa-solid fa-plus"></i>
+	                  </button>
+                  </div>`;
+
+          data.forEach(product => {
+            html += `
+                <div class="card" id="prod-card-${product.Product_id}">
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <i style="font-size: 12rem; border-radius: 50%; width: 15rem; height:15rem; color: rgba(0, 0, 0, 0.3);" class="fa-solid fa-box"></i>
+                    </div>
+                    
+                    <div style="transform: translateY(-9px); font-weight: 600; font-size: 1.3rem; color: grey; display: flex; flex-direction: column; justify-content: space-evenly; text-align: left; width: 100%; height: 40%;">
+                        <p>Name : ${product.Product_name}</p>
+                        <p>Price : ₹${product.Product_price}</p>
+                        <p>Category : ${product.Cat_name}</p>
+                        <p>Shop : ${product.Shop_name}</p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: space-around; gap: 10px;">
+                        <button onclick="prepareProductEdit(${product.Product_id}, '${product.Product_name}', ${product.Product_price}, ${product.Cat_id})" class="edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="handleProductDelete(${product.Product_id})" class="delete">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>`;
+          });
+          productCardContainer.innerHTML = html;
+        })
+        .catch(err => {
+          console.error(err);
+          productCardContainer.innerHTML = "<p>Failed to load products.</p>";
+        });
+    };
+
+    /**
+     * 3. MODAL CONTROLS (ADD)
+     */
+    const openProductModal = () => {
+      document.getElementById('prodModalTitle').innerText = "Add New Product";
+      document.getElementById('modal_prod_id').value = ""; // Reset ID
+      document.getElementById('productForm').reset();
+
+      // Ensure "Select Category" isn't an option in the Modal
+      const modalCat = document.getElementById('modal_prod_cat');
+      if (modalCat.options[0] && modalCat.options[0].value === "") {
+        modalCat.remove(0);
+      }
+
+      document.getElementById('productModal').style.display = 'flex';
+    };
+
+    const closeProductModal = () => {
+      document.getElementById('productModal').style.display = 'none';
+    };
+
+    /**
+     * 4. PREPARE UPDATE (EDIT MAPPING)
+     */
+    const prepareProductEdit = (id, name, price, catId) => {
+      document.getElementById('prodModalTitle').innerText = "Update Product";
+      document.getElementById('modal_prod_id').value = id;
+      document.getElementById('modal_prod_name').value = name;
+      document.getElementById('modal_prod_price').value = price;
+      document.getElementById('modal_prod_cat').value = catId;
+
+      document.getElementById('productModal').style.display = 'flex';
+    };
+
+    /**
+     * 5. SAVE / UPDATE LOGIC (With Duplicate Check)
+     */
+    document.getElementById('productForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveProduct.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            closeProductModal();
+            loadProducts(categorySelect.value); // Refresh current view
+          } else {
+            // This handles the Duplicate Product Alert from PHP
+            alert(data.message);
+          }
+        })
+        .catch(err => alert("Error connecting to server."));
+    });
+
+    /**
+     * 6. DELETE LOGIC (With Animation)
+     */
+    const handleProductDelete = (id) => {
+      if (confirm("Delete this product permanently?")) {
+        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteProduct.php?product_id=${id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const card = document.getElementById(`prod-card-${id}`);
+              if (card) {
+                card.style.pointerEvents = "none";
+                card.style.transition = "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+                card.style.transform = "scale(0.3) translateY(30px)";
+                card.style.opacity = "0";
+                card.style.filter = "blur(10px)";
+                setTimeout(() => card.remove(), 500);
+              }
+            } else {
+              alert(data.message);
+            }
+          });
+      }
+    };
+
+    /**
+     * INITIALIZE
+     */
+    categorySelect.addEventListener('change', (e) => loadProducts(e.target.value));
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCategories();
+      loadProducts();
+    });
+  </script>
+
+
+
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+</html>
