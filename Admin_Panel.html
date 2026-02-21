@@ -10,13 +10,34 @@
 
   <link rel="stylesheet" href="style.css">
   <title>Minimalist Admin Panel</title>
-
 </head>
 
 <body>
   <div class="header">
-    <div class="icon"><i class="fa-solid fa-warehouse"></i>STOCK MANAGEMENT</div>
-  </div>
+    <div class="header-left">
+        <i class="fa-solid fa-warehouse"></i> STOCK MANAGEMENT
+    </div>
+
+    <div class="header-right">
+        <div class="header-datetime">
+            <div id="header-date" style="font-size: 0.9rem;"></div>
+            <div class="time-wrapper">
+                <span id="header-time"></span>
+                <span id="header-period" style="font-size: 1.6rem; font-family: 'Courier New', Courier, monospace;"></span>
+            </div>
+        </div>
+
+        <div class="user-profile">
+            <div class="user-info">
+                <span class="user-name">Alex Johnson</span>
+                <span class="user-role">Administrator</span>
+            </div>
+            <div class="user-avatar">
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </div>
+    </div>
+</div>
 
   <div class="layout">
     <div class="sidebar">
@@ -338,8 +359,33 @@
 
 
 
+  <!--------------------------- DATE AND TIME ------------------->
+  <script>
+    function updateClock() {
+      const now = new Date();
 
+      // Date: SAT, FEB 21, 2026
+      const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+      document.getElementById('header-date').textContent = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
 
+      // Time: 07:41:18 (12-hour format)
+      const timeString = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+
+      // Split the time "07:41:18 PM" into "07:41:18" and "PM"
+      const [time, period] = timeString.split(' ');
+
+      document.getElementById('header-time').textContent = time;
+      document.getElementById('header-period').textContent = period;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
   <!-------------------------- CHARTS ----------------------- -->
   <script>
     // Get canvas context

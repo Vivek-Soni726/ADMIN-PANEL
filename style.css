@@ -14,7 +14,8 @@ body {
     font-family: Arial, sans-serif;
     color: #111827;
     /* deep gray text */
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
 /* Header */
@@ -25,11 +26,62 @@ body {
     color: #FFFFFF;
     display: flex;
     align-items: center;
-    padding-left: 1rem;
+    justify-content: space-between;
+    padding: 0 2rem;
     font-weight: bold;
     font-size: 1.6rem;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem; /* Space between Clock and User */
+}
+
+/* DateTime Styling */
+.header-datetime {
+    text-align: right;
+    line-height: 1.1;
+    border-right: 1px solid rgba(255, 255, 255, 0.2); /* Subtle divider */
+    padding-right: 2rem;
+}
+
+#header-date { font-size: 0.9rem; font-weight: normal; opacity: 0.7; }
+.time-wrapper { color: #FBBF24; font-family: monospace; }
+#header-time { font-size: 1.5rem; }
+#header-period { font-size: 0.9rem; margin-left: 2px; }
+
+/* User Profile Styling */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    cursor: pointer;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.user-name {
+    font-size: 1.4rem;
+    letter-spacing: 0.05rem;
+}
+
+.user-role {
+    font-size: 1rem;
+    font-weight: normal;
+    color: #A78BFA; /* Lighter purple/lavender for the role */
+}
+
+.user-avatar i {
+    font-size: 3.2rem;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
 /* Layout wrapper */
 .layout {
     display: flex;
@@ -49,7 +101,8 @@ body {
 
 .sidebar button {
     display: block;
-    width: 100%; /* Changed from 217px to 100% for better responsiveness */
+    width: 100%;
+    /* Changed from 217px to 100% for better responsiveness */
     max-width: 217px;
     background-color: transparent;
     border: none;
@@ -65,7 +118,7 @@ body {
 
 button:hover {
     color: white;
-    box-shadow: 0px 0px 1.5px 0.5px rgb(88, 88, 88);
+    box-shadow: 0px 0px 1.6px 0.5px rgb(88, 88, 88);
     transition-duration: 250ms;
     background-color: rgba(76, 29, 149, 0.7);
 }
@@ -74,6 +127,14 @@ button:hover {
     background-color: #4C1D95;
     color: white;
     border-radius: 5px;
+    padding-left: 10px;
+}
+
+.sidebar button:hover {
+    background-color: #4C1D95;
+    color: white;
+    border-radius: 5px;
+    padding-left: 10px;
 }
 
 /* Main content */
@@ -83,8 +144,10 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    overflow-x: hidden; /* Prevent dashboard overflow */
-    min-width: 0; /* CRITICAL: Allows flex child to shrink below content size */
+    overflow-x: hidden;
+    /* Prevent dashboard overflow */
+    min-width: 0;
+    /* CRITICAL: Allows flex child to shrink below content size */
 }
 
 .div1 {
@@ -159,12 +222,14 @@ button:hover {
     width: 100%;
     align-items: center;
     justify-content: center;
-    overflow-x: hidden; /* Prevent overflow */
+    overflow-x: hidden;
+    /* Prevent overflow */
 }
 
 .filter {
     width: 98%;
-    max-width: 100%; /* Ensure it doesn't exceed parent */
+    max-width: 100%;
+    /* Ensure it doesn't exceed parent */
     height: 4rem;
     border-radius: 5px;
     background-color: #f2f2f2;
@@ -193,7 +258,8 @@ button:hover {
 .category-card,
 .product-card {
     background-color: #f2f2f2;
-    width: 100%; /* Changed from 98% */
+    width: 100%;
+    /* Changed from 98% */
     max-width: 100%;
     height: 60rem;
     padding: 2rem;
@@ -204,7 +270,8 @@ button:hover {
     gap: 20px;
     max-height: 90%;
     overflow-y: auto;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
     box-sizing: border-box;
 }
 
@@ -233,16 +300,28 @@ button:hover {
 }
 
 .card {
-    width: 100%; /* Changed from fixed 23rem to 100% */
-    max-width: 23rem; /* Maintain maximum size */
-    height: 30rem;
+    width: 100%;
+    /*Changedfromfixed23remto100%*/max-width: 23rem;
+    /*Maintainmaximumsize*/height: 30rem;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: 15px;
     text-align: center;
     box-sizing: border-box;
-    margin: 0 auto; /* Center cards in their grid cell */
+    margin: 0 auto;
+    /*Centercardsintheirgridcell*/transition: transform 300ms cubic-bezier(0.25, 1, 0.5, 1),                 box-shadow 300ms cubic-bezier(0.25, 1, 0.5, 1);
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+.card:hover {
+    transform: scale(1.04);
+    z-index: 10;
+    /* Adding a shadow lift makes the scale look realistic */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .fa-solid {
@@ -337,6 +416,7 @@ button:hover {
 
 /* Large Desktops (1600px+) - Show exactly 5 cards */
 @media (min-width: 1600px) {
+
     .shop-card,
     .user-card,
     .category-card,
@@ -348,6 +428,7 @@ button:hover {
 
 /* Standard Desktop (1200px - 1599px) - Show exactly 5 cards */
 @media (min-width: 1200px) and (max-width: 1599px) {
+
     .shop-card,
     .user-card,
     .category-card,
@@ -360,6 +441,7 @@ button:hover {
 
 /* Medium Desktop (1024px - 1199px) - Show 4 cards */
 @media (min-width: 1024px) and (max-width: 1199px) {
+
     .shop-card,
     .user-card,
     .category-card,
@@ -372,7 +454,8 @@ button:hover {
 /* Tablets Landscape (768px - 1023px) - Show 3 cards */
 @media (max-width: 1023px) {
     html {
-        font-size: 56.25%; /* Slightly smaller base font (9px) */
+        font-size: 56.25%;
+        /* Slightly smaller base font (9px) */
     }
 
     .layout {
@@ -432,7 +515,8 @@ button:hover {
 /* Tablets Portrait (600px - 767px) - Show 2 cards */
 @media (max-width: 767px) {
     html {
-        font-size: 50%; /* Base font becomes 8px */
+        font-size: 50%;
+        /* Base font becomes 8px */
     }
 
     .header {
@@ -497,7 +581,8 @@ button:hover {
 /* Mobile Devices (400px - 599px) - Show 1 card */
 @media (max-width: 599px) {
     html {
-        font-size: 50%; /* Keep 8px base */
+        font-size: 50%;
+        /* Keep 8px base */
     }
 
     .header {
@@ -576,7 +661,8 @@ button:hover {
 /* Extra Small Mobile (max 399px) - Show 1 card */
 @media (max-width: 399px) {
     html {
-        font-size: 43.75%; /* 7px base font */
+        font-size: 43.75%;
+        /* 7px base font */
     }
 
     .header {
