@@ -10,85 +10,7 @@
 
   <link rel="stylesheet" href="style.css">
   <title>Minimalist Admin Panel</title>
-  <style>
-    .card {
-      height: 30rem;
-    }
 
-    /* --- Edit Button --- */
-    .card .edit {
-      color: #10B981;
-      /* Professional Emerald Green */
-      transform: translateY(-3px);
-      border-radius: 25px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      /* Subtle border for structure */
-      background-color: transparent;
-      height: 2.8rem;
-      width: 10rem;
-      /* Adjusted slightly for better card fit */
-      display: inline-flex;
-      /* Use flex to align icon/text */
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      /* Smooth color change */
-    }
-
-    .card .edit:hover {
-      background-color: #10B981;
-      color: #ffffff;
-      border-color: #10B981;
-    }
-
-    .edit i {
-      font-size: 1.5rem;
-      opacity: 0.8;
-    }
-
-    /* --- Delete Button --- */
-    .card .delete {
-      color: #EF4444;
-      /* Modern soft red */
-      transform: translateY(-3px);
-      border-radius: 25px;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      background-color: transparent;
-      height: 2.8rem;
-      width: 10rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .card .delete:hover {
-      background-color: #EF4444;
-      color: #ffffff;
-      border-color: #EF4444;
-    }
-
-    .delete i {
-      font-size: 1.5rem;
-      opacity: 0.8;
-    }
-
-    /* Ensure icons turn white on hover */
-    .card .edit:hover i,
-    .card .delete:hover i {
-      opacity: 1;
-      color: #ffffff;
-    }
-
-    /* Your Active Button Style */
-    .active-btn {
-      background-color: #4C1D95 !important;
-      color: white !important;
-      border-left: 0px solid transparent !important;
-    }
-  </style>
 </head>
 
 <body>
@@ -418,13 +340,6 @@
 
 
 
-
-
-
-
-
-
-
   <!-------------------------- CHARTS ----------------------- -->
   <script>
     // Get canvas context
@@ -542,6 +457,7 @@
 
 
 
+
   <!------------------- Product and Category Count ---------------------->
   <script>
     let count_product = document.getElementById('total_product');
@@ -593,6 +509,8 @@
         });
     });
   </script>
+
+
 
 
   <!-- --------<select> FOR USER PANEL------------- -->
@@ -1265,9 +1183,6 @@
       loadProducts();
     });
   </script>
-
-
-
 
 
 
