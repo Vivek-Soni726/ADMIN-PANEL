@@ -312,6 +312,10 @@ button:hover {
     border-color: #EF4444;
 }
 
+.card:hover{
+    background-color: #EF4444;
+}
+
 .delete i {
     font-size: 1.5rem;
     opacity: 0.8;
