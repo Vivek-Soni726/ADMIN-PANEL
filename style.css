@@ -406,7 +406,7 @@ button:hover {
 .card .delete:hover i,
 .card .refill:hover i {
     opacity: 1;
-    color: #123412;
+    color: #ffffff;
 }
 
 /* Your Active Button Style */
