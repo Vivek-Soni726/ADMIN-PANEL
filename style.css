@@ -391,29 +391,6 @@ button:hover {
     border-color: #EF4444;
 }
 
-/* --- Delete Button --- */
-.card .refill {
-    color: ;
-    /* Modern soft red */
-    transform: translateY(-3px);
-    border-radius: 25px;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    background-color: transparent;
-    height: 2.8rem;
-    width: 10rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.card .refill:hover {
-    background-color: #EF4444;
-    color: #ffffff;
-    border-color: #EF4444;
-}
-
 .delete i {
     font-size: 1.5rem;
     opacity: 0.8;
@@ -429,7 +406,7 @@ button:hover {
 .card .delete:hover i,
 .card .refill:hover i {
     opacity: 1;
-    color: #ffffff;
+    color: #123412;
 }
 
 /* Your Active Button Style */
