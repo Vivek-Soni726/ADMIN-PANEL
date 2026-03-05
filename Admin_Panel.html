@@ -819,8 +819,13 @@
                         <button onclick="editShop(${shop.Shop_id})" class="edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
+
                         <button onclick="deleteShop(${shop.Shop_id})" class="delete">
                             <i class="fa-solid fa-trash-can"></i>
+                        </button>
+
+                        <button onclick="openShopRefillModal(${shop.Shop_id}, '${shop.Shop_name}')" class="refill">
+                            <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
                 </div>`;

@@ -339,22 +339,22 @@ button:hover {
 /* --- Edit Button --- */
 .card .edit {
     color: #10B981;
-    /* Professional Emerald Green */
-    transform: translateY(-3px);
+    /*ProfessionalEmeraldGreen*/transform: translateY(-3px);
     border-radius: 25px;
     border: 1px solid rgba(16, 185, 129, 0.3);
-    /* Subtle border for structure */
-    background-color: transparent;
+    /*Subtleborderforstructure*/background-color: transparent;
     height: 2.8rem;
     width: 10rem;
-    /* Adjusted slightly for better card fit */
-    display: inline-flex;
-    /* Use flex to align icon/text */
-    align-items: center;
+    /*Adjustedslightlyforbettercardfit*/display: inline-flex;
+    /*Useflextoalignicon/text*/align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    /* Smooth color change */
+        /* Smooth color change */
+    -webkit-transform: translateY(-3px);
+    -moz-transform: translateY(-3px);
+    -ms-transform: translateY(-3px);
+    -o-transform: translateY(-3px);
 }
 
 .card .edit:hover {
@@ -391,14 +391,43 @@ button:hover {
     border-color: #EF4444;
 }
 
+/* --- Delete Button --- */
+.card .refill {
+    color: ;
+    /* Modern soft red */
+    transform: translateY(-3px);
+    border-radius: 25px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    background-color: transparent;
+    height: 2.8rem;
+    width: 10rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card .refill:hover {
+    background-color: #EF4444;
+    color: #ffffff;
+    border-color: #EF4444;
+}
+
 .delete i {
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+.refill i{
     font-size: 1.5rem;
     opacity: 0.8;
 }
 
 /* Ensure icons turn white on hover */
 .card .edit:hover i,
-.card .delete:hover i {
+.card .delete:hover i,
+.card .refill:hover i {
     opacity: 1;
     color: #ffffff;
 }
