@@ -3,8 +3,12 @@ header('Content-Type: application/json');
 $conn = new mysqli("localhost", "root", "", "project");
 
 if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Connection failed"]);
-    exit;
+    echo json_encode([
+        "success" => false, 
+        "message" => "Database connection failed",
+        "debug" => $conn->connect_error // Optional: only for development
+    ]);
+    exit; // Stop further script execution
 }
 
 // Use isset to prevent "Undefined Index" errors

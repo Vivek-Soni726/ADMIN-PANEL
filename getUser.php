@@ -1,14 +1,22 @@
 <?php
 header('Content-Type: application/json');
+
 $servername = 'localhost';
 $username   = 'root';
 $password   = '';
 $dbname     = 'project';
 
+// 1. Defined as $con
 $con = new mysqli($servername, $username, $password, $dbname);
 
+// 2. FIX: Use $con to match line 8
 if ($con->connect_error) {
-    die("Can't connect to server!! " . $con->connect_error);
+    echo json_encode([
+        "success" => false, 
+        "message" => "Database connection failed",
+        "debug"   => $con->connect_error 
+    ]);
+    exit;
 }
 
 $shop_id = $_GET['shop_id'] ?? null;
@@ -44,11 +52,12 @@ if ($shop_id) {
 }
 
 $data = [];
-while ($row = $result->fetch_assoc()) {
-    $data[] = $row;
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
 }
 
-header('Content-Type: application/json');
 echo json_encode($data);
 
 $con->close();

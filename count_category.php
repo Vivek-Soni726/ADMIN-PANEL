@@ -1,26 +1,33 @@
 <?php
+header('Content-Type: application/json');
+
 $servername = 'localhost';
 $username = 'root';
 $password = '';
 $dbname = 'project';
 
+// You defined it as $con here
 $con = new mysqli($servername, $username, $password, $dbname);
 
-if($con->connect_error){
-    die("Can't connect to server!!". $con->connect_error);
+// FIX: Changed $conn to $con
+if ($con->connect_error) {
+    echo json_encode([
+        "success" => false, 
+        "message" => "Database connection failed",
+        "debug" => $con->connect_error 
+    ]);
+    exit; 
 }
 
-$sql = "SELECT count(Cat_id) AS category_count from category";
-$data = [];
+$sql = "SELECT count(Cat_id) AS total from category"; 
 $result = $con->query($sql);
 
-if($result->num_rows > 0){
-    while($row = $result->fetch_assoc()){
-        $data[] = $row;
-    }
+if($result){
+    $row = $result->fetch_assoc();
+    echo json_encode($row); 
+} else {
+    echo json_encode(["success" => false, "message" => "Query failed"]);
 }
 
-header('Content-Type: application/json');
-echo json_encode($data);
 $con->close();
 ?>

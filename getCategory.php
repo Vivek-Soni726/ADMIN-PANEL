@@ -9,10 +9,13 @@ $dbname = "project";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-if($conn->connect_error){
-    // Return JSON error instead of plain text "die"
-    echo json_encode(["error" => "Error connecting server: " . $conn->connect_error]);
-    exit;
+if ($conn->connect_error) {
+    echo json_encode([
+        "success" => false, 
+        "message" => "Database connection failed",
+        "debug" => $conn->connect_error // Optional: only for development
+    ]);
+    exit; // Stop further script execution
 }
 
 // Cleaned up the SQL to avoid duplicate Cat_id columns

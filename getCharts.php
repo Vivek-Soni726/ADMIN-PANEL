@@ -1,4 +1,6 @@
 <?php
+header('Content-Type: application/json');
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -7,7 +9,12 @@ $dbname = "project";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-    die("Error connecting server" . $conn->connect_error);
+    echo json_encode([
+        "success" => false, 
+        "message" => "Database connection failed",
+        "debug" => $conn->connect_error // Optional: only for development
+    ]);
+    exit; // Stop further script execution
 }
 
 $sql = 'SELECT 
@@ -52,7 +59,6 @@ if ($result->num_rows > 0) {
     }
 }
 
-header('Content-Type: application/json');
 echo json_encode([
     'sales'=> $sale,
     'stock'=> $stock]);
