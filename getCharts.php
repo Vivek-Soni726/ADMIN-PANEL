@@ -1,21 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    echo json_encode([
-        "success" => false, 
-        "message" => "Database connection failed",
-        "debug" => $conn->connect_error // Optional: only for development
-    ]);
-    exit; // Stop further script execution
-}
+require_once 'adminHeader.php';
 
 $sql = 'SELECT 
                 p.Product_id,
@@ -37,8 +23,8 @@ if ($result->num_rows > 0) {
 }
 
 $stmt = 'SELECT 
-    p.Product_id,
-    p.Product_name,
+    c.Cat_name,
+    COUNT(DISTINCT p.Product_id) AS TotalProductsInCategory,
     SUM(
         CASE 
             WHEN m.Movement_type = "IN" THEN m.Movement_quantity
@@ -46,9 +32,10 @@ $stmt = 'SELECT
             ELSE 0
         END
     ) AS CurrentStock
-FROM product AS p
+FROM category AS c
+LEFT JOIN product AS p ON c.Cat_id = p.Cat_id
 LEFT JOIN stock_movement AS m ON p.Product_id = m.Product_id
-GROUP BY p.Product_id, p.Product_name';
+GROUP BY c.Cat_id, c.Cat_name';
 
 $stock = [];
 $result = $conn->query($stmt);
@@ -60,6 +47,7 @@ if ($result->num_rows > 0) {
 }
 
 echo json_encode([
-    'sales'=> $sale,
-    'stock'=> $stock]);
+    'sales' => $sale,
+    'stock' => $stock
+]);
 $conn->close();

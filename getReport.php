@@ -1,17 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "project"; 
-
-$conn = new mysqli($host, $user, $pass, $db);
-
-if ($conn->connect_error) {
-    echo json_encode(["error" => "Connection failed"]);
-    exit;
-}
+require_once 'adminHeader.php'; 
 
 // Capture Date Inputs
 $from = $_GET['from'] ?? '';

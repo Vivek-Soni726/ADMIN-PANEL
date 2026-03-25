@@ -1,15 +1,6 @@
 <?php
 header('Content-Type: application/json');
-$conn = new mysqli("localhost", "root", "", "project");
-
-if ($conn->connect_error) {
-    echo json_encode([
-        "success" => false, 
-        "message" => "Database connection failed",
-        "debug" => $conn->connect_error 
-    ]);
-    exit;
-}
+require_once 'adminHeader.php'; 
 
 // Collect Name and optional Description
 $cat_name = isset($_POST['cat_name']) ? trim($_POST['cat_name']) : '';

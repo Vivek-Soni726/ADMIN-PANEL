@@ -1,24 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = 'localhost';
-$username   = 'root';
-$password   = '';
-$dbname     = 'project';
-
-// 1. Defined as $con
-$con = new mysqli($servername, $username, $password, $dbname);
-
-// 2. FIX: Changed $conn to $con
-if ($con->connect_error) {
-    echo json_encode([
-        "success" => false, 
-        "message" => "Database connection failed",
-        "debug" => $con->connect_error 
-    ]);
-    exit;
-}
-
+require_once 'adminHeader.php'; 
 $cat_id = $_GET['Cat_id'] ?? null;
 
 /**
@@ -38,13 +21,13 @@ $baseQuery = "SELECT
 
 if ($cat_id) {
     $sql = $baseQuery . " WHERE p.Cat_id = ? GROUP BY p.Product_id";
-    $stmt = $con->prepare($sql);
+    $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $cat_id);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
     $sql = $baseQuery . " GROUP BY p.Product_id";
-    $result = $con->query($sql);
+    $result = $conn->query($sql);
 }
 
 $data = [];
@@ -58,5 +41,5 @@ if ($result) {
 
 echo json_encode($data);
 
-$con->close();
+$conn->close();
 ?>

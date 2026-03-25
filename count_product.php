@@ -1,26 +1,10 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = 'localhost';
-$username = 'root';
-$password = '';
-$dbname = 'project';
-
-// 1. Defined as $con
-$con = new mysqli($servername, $username, $password, $dbname);
-
-// 2. FIX: Changed $conn to $con to match line 9
-if ($con->connect_error) {
-    echo json_encode([
-        "success" => false, 
-        "message" => "Database connection failed",
-        "debug" => $con->connect_error 
-    ]);
-    exit; 
-}
+require_once 'adminHeader.php'; 
 
 $sql = "SELECT count(Product_id) as product_count from product";
-$result = $con->query($sql);
+$result = $conn->query($sql);
 
 if($result) {
     $row = $result->fetch_assoc();
@@ -30,5 +14,5 @@ if($result) {
     echo json_encode(["success" => false, "message" => "Query failed"]);
 }
 
-$con->close();
+$conn->close();
 ?>

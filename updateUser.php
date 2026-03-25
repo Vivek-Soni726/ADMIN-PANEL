@@ -1,12 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = new mysqli("localhost", "root", "", "project");
-
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Database connection failed"]);
-    exit;
-}
+require_once 'adminHeader.php'; 
 
 if (isset($_POST['user_id'])) {
     $id = intval($_POST['user_id']);

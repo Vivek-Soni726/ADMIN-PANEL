@@ -1,10 +1,7 @@
 <?php
 header('Content-Type: application/json');
-$conn = new mysqli("localhost", "root", "", "project");
 
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
-}
+require_once 'adminHeader.php'; 
 
 $from = $_GET['from'] ?? '';
 $to   = $_GET['to']   ?? '';

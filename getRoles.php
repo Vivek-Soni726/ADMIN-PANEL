@@ -1,21 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    echo json_encode([
-        "success" => false, 
-        "message" => "Database connection failed",
-        "debug" => $conn->connect_error // Optional: only for development
-    ]);
-    exit; // Stop further script execution
-}
+require_once 'adminHeader.php'; 
 
 // Exclude Role_id 1 (Admin) as requested
 $sql = "SELECT Role_id, Role_name FROM role WHERE Role_id != 1";

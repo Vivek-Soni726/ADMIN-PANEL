@@ -1,3 +1,7 @@
+<?php
+include 'adminHeader.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,10 +13,31 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <link rel="stylesheet" href="style.css">
-  <title>Minimalist Admin Panel</title>
+  <title>Admin Panel</title>
+  <style>
+    /* Special hover effect for the logout button */
+    .logout-btn:hover {
+      background-color: #d32f2f !important;
+      /* Professional Red */
+      color: white !important;
+      padding-left: 20px !important;
+      /* Matches your other buttons' shift effect */
+      box-shadow: 0px 0px 1.6px 0.5px rgb(88, 88, 88);
+    }
+
+    /* Keeps the red color active if the button is clicked/focused */
+    .logout-btn:focus {
+      background-color: #b71c1c !important;
+      /* Darker Red */
+      color: white !important;
+      outline: none;
+    }
+  </style>
 </head>
 
 <body>
+
+  <!--------------------------------------- HEADER ---------------------------------->
   <div class="header">
     <div class="header-left">
       <i class="fa-solid fa-warehouse"></i> STOCK MANAGEMENT
@@ -29,8 +54,13 @@
 
       <div class="user-profile">
         <div class="user-info">
-          <span class="user-name">Vivek Soni</span>
-          <span class="user-role">Administrator</span>
+          <span class="user-name">
+            <?php echo $_SESSION['user_name']; ?>
+          </span>
+
+          <span class="user-role">
+            <?php echo $_SESSION['role_name']; ?>
+          </span>
         </div>
         <div class="user-avatar">
           <i class="fa-solid fa-circle-user"></i>
@@ -40,17 +70,19 @@
   </div>
 
   <div class="layout">
+
+    <!--------------------------------------- SIDEBAR BUTTONS ---------------------------------->
     <div class="sidebar">
       <button id="dashboard" data-target="dashboard" class="active-btn"
         onclick="inventoryValue() ; dashboardCharts() ; product_category_count() ; shopAlert()">
         <i class="fa-solid fa-house"></i>Dashboard
       </button>
 
-      <button id="user" data-target="user" onclick="loadShops()">
+      <button id="user" data-target="user" onclick="loadShops(); loadUsers()">
         <i class="fa-solid fa-user-group"></i>User Management
       </button>
 
-      <button id="shop" data-target="shop">
+      <button id="shop" data-target="shop" onclick="loadAllShops()">
         <i class="fa-solid fa-shop"></i>Shop Management
       </button>
 
@@ -62,11 +94,20 @@
         <i class="fa-solid fa-box-open"></i>Product
       </button>
 
-      <button id="report" data-target="report">
+      <button id="report" data-target="report" onclick="refreshDashboard()">
         <i class="fa-solid fa-chart-line"></i>Reports
       </button>
+
+      <button class="logout-btn" onclick="confirmLogout()"
+        style="display: block; width: 100%; max-width: 217px; background-color: transparent; border: none; height: 7rem; cursor: pointer; color: #d32f2f; font-size: 1.6rem; letter-spacing: 0.12rem; text-align: left; border-radius: 5px; margin-bottom: 3px; margin-top: 20px; padding-left: 10px; transition: all 250ms ease;">
+        <i class="fa-solid fa-right-from-bracket" style="margin-right: 10px;"></i> Logout
+      </button>
     </div>
+
+    <!--------------------------------------- MAIN CONTENTS ---------------------------------->
     <div style="align-items: center; justify-content: center; width: 98%;" class="panel">
+
+      <!-- -----------------DASHBOARD PANEL---------------- -->
       <div class="dashboard visible">
         <div class="div1">
           <div>
@@ -110,6 +151,7 @@
           </div>
 
         </div>
+        <!-- -----------------DASHBOARD CHARTS---------------- -->
         <div class="Chart">
           <div class="barchart"><canvas id="myChart"></canvas></div>
           <div class="piechart"><canvas id="myChart2"></canvas></div>
@@ -180,11 +222,11 @@
               <h2 id="display-profit">₹0</h2>
             </div>
             <div class="kpi-card">
-              <p>Active Shops</p>
+              <p>Total Shops</p>
               <h2 id="display-shops">0</h2>
             </div>
             <div class="kpi-card">
-              <p>Active Users</p>
+              <p>Total Users (With Admin)</p>
               <h2 id="display-users">0</h2>
             </div>
           </div>
@@ -201,7 +243,7 @@
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 25px;">
-            <div class="report-box">
+            <div style="max-height: 500px; overflow-y:auto;" class="report-box">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h4 style="margin:0;">Product Inventory Report</h4>
                 <button class="btn-export-purple" onclick="exportCSV('prodTable')">Export CSV</button>
@@ -220,7 +262,7 @@
               </table>
             </div>
 
-            <div class="report-box">
+            <div style="max-height: 500px; overflow-y:auto;" class="report-box">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h4 style="margin:0;">Shop Management Directory</h4>
                 <button class="btn-export-green" onclick="exportCSV('shopTable')">Export CSV</button>
@@ -241,7 +283,6 @@
           </div>
         </div>
       </div>
-
 
     </div>
   </div>
@@ -414,12 +455,20 @@
             placeholder="e.g. Beverages, Snacks" required>
         </div>
 
+        <div style="margin-bottom:20px;">
+          <label style="font-weight:bold; color:grey;">Description</label>
+          <textarea id="modal_cat_description"
+            style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd; height: 80px; resize: none;"
+            placeholder="Brief description of category..."></textarea>
+        </div>
+
         <div style="display:flex; gap:12px; justify-content:flex-end;">
           <button type="button" onclick="closeCatModal()"
             style="padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer;">Cancel</button>
           <button type="submit"
             style="padding:10px 25px; background:#4C1D95; color:white; border:none; border-radius:8px; cursor:pointer;">Save</button>
         </div>
+
       </form>
     </div>
   </div>
@@ -441,7 +490,7 @@
         </div>
 
         <div style="margin-bottom:15px;">
-          <label style="font-weight:bold; color:grey;">Price (₹)</label>
+          <label style="font-weight:bold; color:grey;">Cost Price (₹)</label>
           <input type="number" step="0.01" id="modal_prod_price" name="Cost_price"
             style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ddd;" required>
         </div>
@@ -509,15 +558,28 @@
 
 
 
+  <!----------------------------------------------LOGOUT ------------------------------- -->
+  <script>
+    function confirmLogout() {
+      if (confirm("Are you sure you want to log out?")) {
+        // Point to your root logout.php file
+        window.location.href = "../logout.php";
+      }
+    }
+  </script>
 
-  
   <!--------------------------- DATE AND TIME ------------------->
   <script>
     function updateClock() {
       const now = new Date();
 
       // Date: SAT, FEB 21, 2026
-      const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+      const dateOptions = {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      };
       document.getElementById('header-date').textContent = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
 
       // Time: 07:41:18 (12-hour format)
@@ -554,7 +616,7 @@
       if (stockDoughnutChart) stockDoughnutChart.destroy();
 
       // 4. Fetch data from PHP backend
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCharts.php')
+      fetch('getCharts.php')
         .then(response => response.json())
         .then(data => {
 
@@ -562,42 +624,94 @@
           salesBarChart = new Chart(ctx, {
             type: 'bar',
             data: {
+              // row.Product_name matches your PHP $sql query
               labels: data.sales.map(row => row.Product_name),
               datasets: [{
                 label: 'Total Quantity Sold',
+                // row.TotalQuantityMoved matches your PHP $sql query
                 data: data.sales.map(row => row.TotalQuantityMoved),
                 backgroundColor: '#6EB8E1',
                 borderColor: '#1F2937',
-                borderWidth: 1
+                borderWidth: 1,
+                hoverBackgroundColor: '#4A90B5',
+                hoverBorderColor: '#000000',
+                hoverBorderWidth: 2,
+                borderRadius: 5,
               }]
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              animation: {
+                duration: 1500,
+                easing: 'easeOutBounce',
+                delay: (context) => {
+                  let delay = 0;
+                  if (context.type === 'data' && context.mode === 'default') {
+                    delay = context.dataIndex * 150;
+                  }
+                  return delay;
+                }
+              },
               plugins: {
                 title: {
                   display: true,
                   text: 'Product Wise Sales Performance',
-                  font: { size: 18 }
+                  font: {
+                    size: 18
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                  padding: 10,
+                  displayColors: false,
+                  bodyFont: {
+                    size: 13
+                  }
                 }
               },
-              scales: { y: { beginAtZero: true } },
-              animation: { duration: 1500, easing: 'easeOutBounce' }
+              interaction: {
+                mode: 'index',
+                intersect: false
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(0,0,0,0.05)'
+                  }
+                },
+                x: {
+                  grid: {
+                    display: false
+                  }
+                }
+              }
             }
           });
 
           // --- CREATE DOUGHNUT CHART ---
+          const getDynamicColors = (count) => {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+              const hue = i * 137.508;
+              colors.push(`hsl(${hue % 360}, 70%, 60%)`);
+            }
+            return colors;
+          };
+
+          // 2. Your existing chart variable with the dynamic color function integrated
           stockDoughnutChart = new Chart(cx, {
             type: 'doughnut',
             data: {
-              labels: data.stock.map(row => row.Product_name),
+              // UPDATED: Now using Category Name from your $stmt
+              labels: data.stock.map(row => row.Cat_name),
               datasets: [{
-                label: 'Current Stock',
+                label: 'Total Category Stock',
+                // UPDATED: Now using the calculated CurrentStock per category
                 data: data.stock.map(row => row.CurrentStock),
-                backgroundColor: [
-                  '#4C1D95', '#A78BFA', '#FBBF24',
-                  '#111827', '#8B5CF6', '#DDD6FE'
-                ],
+
+                backgroundColor: getDynamicColors(data.stock.length),
                 borderColor: '#ffffff',
                 borderWidth: 2,
                 hoverOffset: 20
@@ -614,13 +728,34 @@
               },
               plugins: {
                 legend: {
-                  labels: { font: { family: 'Arial', size: 12 }, color: '#111827' }
+                  labels: {
+                    font: {
+                      family: 'Arial',
+                      size: 12
+                    },
+                    color: '#111827'
+                  }
                 },
                 title: {
                   display: true,
-                  text: 'Product Wise Quantity',
+                  // UPDATED: Changed text to reflect Category view
+                  text: 'Category Wise Stock Distribution',
                   color: '#4C1D95',
-                  font: { size: 18, weight: 'bold' }
+                  font: {
+                    size: 18,
+                    weight: 'bold'
+                  }
+                },
+                // ADDED: Custom tooltip to show the number of products in this category
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const index = context.dataIndex;
+                      const stockVal = data.stock[index].CurrentStock;
+                      const prodCount = data.stock[index].TotalProductsInCategory;
+                      return ` Stock: ${stockVal} (${prodCount} Products)`;
+                    }
+                  }
                 }
               }
             }
@@ -671,7 +806,7 @@
       let count_category = document.getElementById('total_category');
 
       // Fetch Total Products
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/count_product.php')
+      fetch('count_product.php')
         .then(response => response.json())
         .then(data => {
           if (count_product) {
@@ -681,7 +816,7 @@
         .catch(err => console.error("Error fetching product count:", err));
 
       // Fetch Total Categories
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/count_category.php')
+      fetch('count_category.php')
         .then(response => response.json())
         .then(data => {
           if (count_category) {
@@ -698,7 +833,7 @@
   <!---------------- Shop Alerts ---------------->
   <script>
     function shopAlert() {
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getShopAlert.php')
+      fetch('getShopAlert.php')
         .then(response => response.json())
         .then(data => {
           const stock_alerts = data['count'] || 0;
@@ -718,7 +853,7 @@
   <!-------------- Inventory Value ------------------->
   <script>
     function inventoryValue() {
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getInventory.php')
+      fetch('getInventory.php')
         .then(response => response.json())
         .then(data => {
           let inventory_values = data['inventory_value'];
@@ -733,8 +868,8 @@
   <!-------------- Product Refill ------------------->
   <script>
     /**
-   * 5. REFILL MODAL LOGIC
-   */
+     * 5. REFILL MODAL LOGIC
+     */
 
     // Function to fetch products and open the modal
     const openShopRefillModal = (shopId, shopName) => {
@@ -743,7 +878,7 @@
       document.getElementById('refill_shop_id').value = shopId;
 
       // 2. Fetch Products for the dropdown
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getProduct.php')
+      fetch('getProduct.php')
         .then(res => res.json())
         .then(products => {
           let options = '<option value="">-- Choose Product --</option>';
@@ -764,14 +899,14 @@
     };
 
     // Handle Refill Form Submission
-    document.getElementById('refillForm').addEventListener('submit', function (e) {
+    document.getElementById('refillForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
 
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/processRefill.php', {
-        method: 'POST',
-        body: formData
-      })
+      fetch('processRefill.php', {
+          method: 'POST',
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -784,9 +919,6 @@
         .catch(err => console.error("Refill submission error:", err));
     });
   </script>
-
-
-
 
   <!-- -------------- USER PANEL ------------------->
   <script>
@@ -801,20 +933,29 @@
     // --- 1. DATA LOADING FUNCTIONS ---
 
     const loadShops = () => {
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getShop.php')
+      fetch('getShop.php')
         .then(res => res.json())
         .then(data => {
           let options = '<option value=""> ---All Shops---</option>';
-          data.forEach(shop => {
-            options += `<option value="${shop.Shop_id}">${shop.Shop_name}</option>`;
-          });
+
+          // FIX: Check if data is the array, or if the array is inside data.shops
+          const shopArray = Array.isArray(data) ? data : (data.shops || data.data);
+
+          if (shopArray && Array.isArray(shopArray)) {
+            shopArray.forEach(shop => {
+              options += `<option value="${shop.Shop_id}">${shop.Shop_name}</option>`;
+            });
+          } else {
+            console.error('Expected an array but received:', data);
+          }
+
           shopSelect.innerHTML = options;
         })
         .catch(err => console.error('Error loading shops:', err));
     };
 
     const loadUsers = (shopId = null) => {
-      let url = 'http://localhost/vicky/College%20Project/ADMIN%20PANEL/getUser.php';
+      let url = 'getUser.php';
       if (shopId) url += `?shop_id=${shopId}`;
 
       fetch(url)
@@ -836,17 +977,17 @@
                                 <i style="font-size: 12rem; border-radius: 50%; width: 15rem; height:15rem; color: rgba(0, 0, 0, 0.3);" class="fa-solid fa-user"></i>
                             </div>
                             <div class="user-info" style="transform: translateY(-9px); font-weight: 600; font-size: 1.3rem; color: grey; text-align: left; width: 100%;">
-                                <p>Shop : ${user.Shop_name}</p>
-                                <p>Name : ${user.User_name}</p>
-                                <p>User ID : ${user.User_id}</p>
+                                <p style= "margin-bottom: 2.5px;">Name : ${user.User_name}</p>
+                                <p style= "margin-bottom: 2.5px;">Contact No. : ${user.User_contact}</p>
+                                <p style= "margin-bottom: 2.5px;">User ID : ${user.User_id}</p>
+                                <p style= "margin-bottom: 2.5px;">Shop : ${user.Shop_name}</p>
                                 <p>Address : ${user.User_address}</p>
-                                <p>Contact No. : ${user.User_contact}</p>
                             </div>
                             <div style="display: flex; flex-direction: row; justify-content: space-around; gap: 10px; margin-top: 10px;">
-                                <button onclick="editItem(${user.User_id})" class="edit light-tooltip" data-tooltip="Edit Personal Details">
+                                <button style="translate: 0px -3px" onclick="editItem(${user.User_id})" class="edit light-tooltip" data-tooltip="Edit Personal Details">
                                     <i class="fa-solid fa-user-pen"></i>
                                 </button>
-                                <button onclick="deleteItem(${user.User_id})" class="delete light-tooltip" data-tooltip="Delete User">
+                                <button style="translate: 0px -3px" onclick="deleteItem(${user.User_id})" class="delete light-tooltip" data-tooltip="Delete User">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
@@ -862,7 +1003,7 @@
 
     const addUser = () => {
       // Load Roles
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getRoles.php')
+      fetch('getRoles.php')
         .then(res => res.json())
         .then(roles => {
           let roleHtml = '<option value="">--Select Role--</option>';
@@ -891,7 +1032,7 @@
     // DELETE USER
     function deleteItem(id) {
       if (confirm(`Are you sure you want to delete this user?`)) {
-        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteUser.php?user_id=${id}`)
+        fetch(`deleteUser.php?user_id=${id}`)
           .then(res => res.json())
           .then(data => {
             if (data.success) {
@@ -929,14 +1070,14 @@
     // --- 4. FORM SUBMISSIONS WITH VALIDATION ---
 
     // ADD NEW USER
-    document.getElementById('addUserForm').addEventListener('submit', function (e) {
+    document.getElementById('addUserForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
 
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/addUser.php', {
-        method: 'POST',
-        body: formData
-      })
+      fetch('addUser.php', {
+          method: 'POST',
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -952,12 +1093,12 @@
     });
 
     // UPDATE EXISTING USER
-    document.getElementById('editUserForm').addEventListener('submit', function (e) {
+    document.getElementById('editUserForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/updateUser.php', {
-        method: 'POST',
-        body: new FormData(this)
-      })
+      fetch('updateUser.php', {
+          method: 'POST',
+          body: new FormData(this)
+        })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -994,7 +1135,7 @@
      * Renders the "Add" button first, then appends shops from the database.
      */
     const loadAllShops = () => {
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/allShop.php')
+      fetch('allShop.php')
         .then(response => response.json())
         .then(data => {
           // Initial HTML with the "Add New Shop" card
@@ -1059,7 +1200,7 @@
      */
     const deleteShop = (shopId) => {
       if (confirm("Are you sure you want to delete this shop?")) {
-        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteShop.php?shop_id=${shopId}`)
+        fetch(`deleteShop.php?shop_id=${shopId}`)
           .then(res => res.json())
           .then(data => {
             if (data.success) {
@@ -1119,17 +1260,17 @@
     /**
      * 4. FORM SUBMISSION (Save or Update)
      */
-    document.getElementById('shopForm').addEventListener('submit', function (e) {
+    document.getElementById('shopForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
       const shopId = document.getElementById('modal_shop_id').value;
       const formData = new FormData(this);
-      const url = 'http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveShop.php';
+      const url = 'saveShop.php';
 
       fetch(url, {
-        method: 'POST',
-        body: formData
-      })
+          method: 'POST',
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -1161,7 +1302,7 @@
       const container = document.querySelector('.category-card');
       if (!container) return;
 
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCategory.php')
+      fetch('getCategory.php')
         .then(res => res.json())
         .then(data => {
           // 1. "Add" button card (Matches exactly)
@@ -1192,8 +1333,8 @@
                       <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                   <button onclick="handleCategoryDelete(${cat.Cat_id})" class="delete light-tooltip" data-tooltip="Delete Category">
-                      <i class="fa-solid fa-trash-can"></i>
-                  </button>
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
               </div>
           </div>`;
           });
@@ -1209,7 +1350,7 @@
       const confirmMsg = "Are you sure? You must delete every product related to this category first.";
 
       if (confirm(confirmMsg)) {
-        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteCategory.php?cat_id=${id}`)
+        fetch(`deleteCategory.php?cat_id=${id}`)
           .then(res => res.json())
           .then(data => {
             if (data.success) {
@@ -1241,6 +1382,7 @@
       document.getElementById('catModalTitle').innerText = "Add Category";
       document.getElementById('modal_cat_id').value = "";
       document.getElementById('categoryForm').reset();
+      document.getElementById('modal_cat_description').value = ""; // Clear description
       document.getElementById('categoryModal').style.display = 'flex';
     };
 
@@ -1248,24 +1390,27 @@
       document.getElementById('categoryModal').style.display = 'none';
     };
 
-    const prepareCategoryEdit = (id, name) => {
+    const prepareCategoryEdit = (id, name, desc) => {
       document.getElementById('catModalTitle').innerText = "Update Category";
       document.getElementById('modal_cat_id').value = id;
       document.getElementById('modal_cat_name').value = name;
+      document.getElementById('modal_cat_description').value = desc; // Set description
       document.getElementById('categoryModal').style.display = 'flex';
     };
 
-    document.getElementById('categoryForm').addEventListener('submit', function (e) {
+    document.getElementById('categoryForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const catId = document.getElementById('modal_cat_id').value;
       const formData = new FormData();
       formData.append('cat_name', document.getElementById('modal_cat_name').value);
+      formData.append('cat_description', document.getElementById('modal_cat_description').value);
+
       if (catId) formData.append('cat_id', catId);
 
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveCategory.php', {
-        method: 'POST',
-        body: formData
-      })
+      fetch('saveCategory.php', {
+          method: 'POST',
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -1292,7 +1437,7 @@
      * Fetches categories for both the filter and the modal dropdown.
      */
     const loadCategories = () => {
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getCategory.php')
+      fetch('getCategory.php')
         .then(res => res.json())
         .then(data => {
           let options = '<option value="">---Select Category---</option>';
@@ -1312,7 +1457,7 @@
      * Fetches products and renders the cards with the exact CSS layout.
      */
     const loadProducts = (Cat_id = null) => {
-      let url = 'http://localhost/vicky/College%20Project/ADMIN%20PANEL/getProduct.php';
+      let url = 'getProduct.php';
       if (Cat_id) url += `?Cat_id=${Cat_id}`;
 
       fetch(url)
@@ -1395,14 +1540,14 @@
     /**
      * 5. SAVE / UPDATE LOGIC (With Duplicate Check)
      */
-    document.getElementById('productForm').addEventListener('submit', function (e) {
+    document.getElementById('productForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
 
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveProduct.php', {
-        method: 'POST',
-        body: formData
-      })
+      fetch('saveProduct.php', {
+          method: 'POST',
+          body: formData
+        })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -1422,7 +1567,7 @@
      */
     const handleProductDelete = (id) => {
       if (confirm("Delete this product permanently?")) {
-        fetch(`http://localhost/vicky/College%20Project/ADMIN%20PANEL/deleteProduct.php?product_id=${id}`)
+        fetch(`deleteProduct.php?product_id=${id}`)
           .then(res => res.json())
           .then(data => {
             if (data.success) {
@@ -1455,142 +1600,166 @@
 
   <!------------------ REPORT PANEL ------------------>
   <script>
-    // Global variables to prevent "Canvas already in use" errors on re-filter
     let barChartInstance = null;
     let lineChartInstance = null;
+
+    function updateKPICards(stats) {
+      if (stats.error) {
+        console.error("Stats Error:", stats.error);
+        return;
+      }
+      document.getElementById('display-profit').innerText = stats.net_profit;
+      document.getElementById('display-shops').innerText = stats.active_shops;
+      document.getElementById('display-users').innerText = stats.active_users;
+    }
+
+    function renderBarChart(chartData) {
+      const ctx = document.getElementById('barChart').getContext('2d');
+      if (barChartInstance) barChartInstance.destroy();
+
+      barChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: chartData.labels,
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: chartData.data,
+            backgroundColor: '#4C1D95',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    function renderLineChart(chartData) {
+      const ctx = document.getElementById('lineChart').getContext('2d');
+      if (lineChartInstance) lineChartInstance.destroy();
+
+      lineChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [{
+            label: 'Sales Velocity',
+            data: chartData.data,
+            borderColor: '#01B574',
+            tension: 0.4,
+            fill: true,
+            backgroundColor: 'rgba(1, 181, 116, 0.05)'
+          }]
+        },
+        options: {
+          responsive: true
+        }
+      });
+    }
+
+    function renderTables(tablesData) {
+      // Update Product Table
+      const prodBody = document.getElementById('prodTableBody');
+      prodBody.innerHTML = tablesData.inventory.map(item => `
+        <tr>
+            <td style="font-weight: 600;">${item.Product_name}</td>
+            <td>${item.qty} Units</td>
+            <td style="font-weight: 700;">₹${Number(item.rev).toLocaleString()}</td>
+            <td><span class="badge-location">${item.Shop_name}</span></td>
+        </tr>
+    `).join('');
+
+      // Update Shop Table
+      const shopBody = document.getElementById('shopTableBody');
+      shopBody.innerHTML = tablesData.directory.map(shop => `
+        <tr>
+            <td style="font-weight: 600;">${shop.Shop_name}</td>
+            <td>${shop.Owner_name}</td>
+            <td>${shop.Contact}</td>
+            <td style="text-align: right; color: #01B574; font-weight: 700;">
+                ₹${Number(shop.rev).toLocaleString()}
+            </td>
+        </tr>
+    `).join('');
+    }
 
     async function refreshDashboard(fromDate = '', toDate = '') {
       try {
         const queryParams = `?from=${fromDate}&to=${toDate}`;
 
-        // 1. Fetch data from all three PHP files simultaneously
         const [statsRes, chartsRes, tablesRes] = await Promise.all([
-          fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getReport.php' + queryParams).then(res => res.json()),
-          fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getReportCharts.php' + queryParams).then(res => res.json()),
-          fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/getReportTable.php' + queryParams).then(res => res.json())
+          fetch('getReport.php' + queryParams).then(res => res.json()),
+          fetch('getReportCharts.php' + queryParams).then(res => res.json()),
+          fetch('getReportTable.php' + queryParams).then(res => res.json())
         ]);
 
-        // 2. Update KPI Cards
-        if (statsRes.error) {
-          console.error("Database error:", statsRes.error);
-        } else {
-          document.getElementById('display-profit').innerText = statsRes.net_profit;
-          document.getElementById('display-shops').innerText = statsRes.active_shops;
-          document.getElementById('display-users').innerText = statsRes.active_users;
-        }
-
-        // 3. Render/Update Bar Chart
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        if (barChartInstance) barChartInstance.destroy();
-        barChartInstance = new Chart(barCtx, {
-          type: 'bar',
-          data: {
-            labels: chartsRes.barChart.labels,
-            datasets: [{
-              label: 'Revenue (₹)',
-              data: chartsRes.barChart.data,
-              backgroundColor: '#4C1D95',
-              borderRadius: 6
-            }]
-          },
-          options: { responsive: true, plugins: { legend: { display: false } } }
-        });
-
-        // 4. Render/Update Line Chart
-        const lineCtx = document.getElementById('lineChart').getContext('2d');
-        if (lineChartInstance) lineChartInstance.destroy();
-        lineChartInstance = new Chart(lineCtx, {
-          type: 'line',
-          data: {
-            labels: chartsRes.lineChart.labels,
-            datasets: [{
-              label: 'Sales Velocity',
-              data: chartsRes.lineChart.data,
-              borderColor: '#01B574',
-              tension: 0.4,
-              fill: true,
-              backgroundColor: 'rgba(1, 181, 116, 0.05)'
-            }]
-          },
-          options: { responsive: true }
-        });
-
-        // 5. Update Product Inventory Table
-        const prodBody = document.getElementById('prodTableBody');
-        prodBody.innerHTML = tablesRes.inventory.map(item => `
-            <tr>
-                <td style="font-weight: 600;">${item.Product_name}</td>
-                <td>${item.qty} Units</td>
-                <td style="font-weight: 700;">₹${Number(item.rev).toLocaleString()}</td>
-                <td><span class="badge-location">${item.Shop_name}</span></td>
-            </tr>
-        `).join('');
-
-        // 6. Update Shop Performance Table
-        const shopBody = document.getElementById('shopTableBody');
-        shopBody.innerHTML = tablesRes.directory.map(shop => `
-            <tr>
-                <td style="font-weight: 600;">${shop.Shop_name}</td>
-                <td>${shop.Owner_name}</td>
-                <td>${shop.Contact}</td>
-                <td style="text-align: right; color: #01B574; font-weight: 700;">
-                    ₹${Number(shop.rev).toLocaleString()}
-                </td>
-            </tr>
-        `).join('');
+        updateKPICards(statsRes);
+        renderBarChart(chartsRes.barChart);
+        renderLineChart(chartsRes.lineChart);
+        renderTables(tablesRes);
 
       } catch (err) {
-        console.error("Error loading dashboard data:", err);
+        console.error("Dashboard Orchestration Error:", err);
       }
     }
 
-    // Export CSV and Log to Database Condition: Shop_id=1, User_id=1
+    function logReportAudit(type, filename) {
+      const formData = new FormData();
+      formData.append('type', type);
+      formData.append('filename', filename);
+
+      fetch('saveReport.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => console.log("Audit Log:", data.status))
+        .catch(err => console.error("Logging Error:", err));
+    }
+
     function exportCSV(tableId) {
       const table = document.getElementById(tableId);
       if (!table) return;
 
-      let reportType = (tableId === 'prodTable') ? "Product Inventory" : "Shop Performance";
-      let baseFileName = (tableId === 'prodTable') ? "Product_Inventory" : "Shop_Performance";
+      const reportType = (tableId === 'prodTable') ? "Product Inventory" : "Shop Performance";
+      const baseName = (tableId === 'prodTable') ? "Product_Inventory" : "Shop_Performance";
+      const filename = `${baseName}_${new Date().toISOString().slice(0, 10)}.csv`;
 
-      const timestamp = new Date().toISOString().slice(0, 10);
-      const finalFileName = `${baseFileName}_${timestamp}.csv`;
+      logReportAudit(reportType, filename);
 
-      // LOGIC: Save to 'report' table via saveReport.php
-      const formData = new FormData();
-      formData.append('type', reportType);
-      formData.append('filename', finalFileName);
-
-      fetch('http://localhost/vicky/College%20Project/ADMIN%20PANEL/saveReport.php', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => console.log("Audit Log:", data.status))
-        .catch(err => console.error("Logging Error:", err));
-
-      // LOGIC: Generate Browser Download
       let csv = [];
       const rows = table.querySelectorAll("tr");
-      for (let i = 0; i < rows.length; i++) {
-        const row = [], cols = rows[i].querySelectorAll("td, th");
-        for (let j = 0; j < cols.length; j++) {
-          let data = cols[j].innerText.replace(/,/g, '').replace('₹', '').trim();
-          row.push('"' + data + '"');
-        }
+      rows.forEach(tr => {
+        const row = [];
+        tr.querySelectorAll("td, th").forEach(td => {
+          let cleanData = td.innerText.replace(/,/g, '').replace('₹', '').trim();
+          row.push(`"${cleanData}"`);
+        });
         csv.push(row.join(","));
-      }
+      });
 
       const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
       const link = document.createElement("a");
-      link.setAttribute("href", encodeURI(csvContent));
-      link.setAttribute("download", finalFileName);
-      document.body.appendChild(link);
+      link.href = encodeURI(csvContent);
+      link.download = filename;
       link.click();
-      document.body.removeChild(link);
     }
 
     function applyDateFilter() {
       const from = document.getElementById('date-from').value;
       const to = document.getElementById('date-to').value;
-      if (from && to) refreshDashboard(from, to);
-      else alert("Please select both dates to filter.");
+
+      if (!from || !to) {
+        alert("Please select both 'From' and 'To' dates.");
+        return;
+      }
+
+      refreshDashboard(from, to);
     }
 
     function resetFilter() {
@@ -1599,7 +1768,8 @@
       refreshDashboard();
     }
 
-    document.addEventListener('DOMContentLoaded', () => refreshDashboard());
+    // Initialize the dashboard on page load
+    window.onload = () => refreshDashboard();
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

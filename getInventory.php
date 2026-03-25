@@ -1,18 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = 'localhost';
-$username = 'root';
-$password = '';
-$dbname = 'project';
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Error handling - formatted as JSON so JS doesn't crash
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Connection failed"]);
-    exit;
-}
+require_once 'adminHeader.php'; 
 
 /**
  * SQL EXPLANATION:

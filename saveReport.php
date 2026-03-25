@@ -1,12 +1,7 @@
 <?php
 // saveReport.php
 header('Content-Type: application/json');
-$conn = new mysqli("localhost", "root", "", "project");
-
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Connection failed"]));
-}
-
+require_once 'adminHeader.php'; 
 // 1. Get data from JavaScript
 $type = $_POST['type'] ?? 'General Report'; 
 $filename = $_POST['filename'] ?? 'report.csv';

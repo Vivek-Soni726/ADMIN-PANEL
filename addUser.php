@@ -1,12 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = new mysqli("localhost", "root", "", "project");
+require_once 'adminHeader.php'; 
 
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Database connection failed"]);
-    exit;
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_name'])) {
     
@@ -19,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_name'])) {
     $email    = trim($_POST['login_email']);
     $password = $_POST['login_password'];
 
-    // 2. NEW VALIDATION: One Manager Per Shop
+    // 2. One Manager Per Shop Validation
     if ($role_id === 2) {
         $check = $conn->prepare("SELECT User_name FROM user WHERE Shop_id = ? AND Role_id = 2 LIMIT 1");
         $check->bind_param("i", $shop_id);
@@ -31,31 +27,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_name'])) {
                 "success" => false, 
                 "message" => "This shop already has a Manager: " . $existing['User_name']
             ]);
-            $check->close(); // Close check statement
+            $check->close();
             exit;
         }
         $check->close();
     }
 
-    // 3. Security check
+    // 3. Security check (Don't let this script create Admins)
     if ($role_id === 1) {
         echo json_encode(["success" => false, "message" => "Unauthorized role assignment."]);
         exit;
     }
 
-    // 4. Start Transaction
+    // 4. Secure Password Hashing
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    
+    // 5. Transaction Logic
     $conn->begin_transaction();
 
     try {
-        // STEP A: Insert into login
+        // STEP A: Insert into login table
         $stmt_login = $conn->prepare("INSERT INTO login (Login_name, Login_email, Login_contact, Login_password, Role_id, Reg_date) VALUES (?, ?, ?, ?, ?, NOW())");
         $stmt_login->bind_param("ssssi", $name, $email, $contact, $hashed_password, $role_id);
         $stmt_login->execute();
         
         $master_id = $conn->insert_id; 
 
-        // STEP B: Insert into user
+        // STEP B: Insert into user table
         $stmt_user = $conn->prepare("INSERT INTO user (User_id, User_name, User_address, User_contact, Role_id, Shop_id, Login_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt_user->bind_param("isssiii", $master_id, $name, $address, $contact, $role_id, $shop_id, $master_id);
         $stmt_user->execute();
@@ -71,9 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_name'])) {
         echo json_encode(["success" => false, "message" => "Database Error: " . $e->getMessage()]);
     }
 } else {
-    // 5. Final fallback for direct URL access
     echo json_encode(["success" => false, "message" => "Invalid Request Method"]);
 }
 
-$conn->close();
+// $conn is closed automatically at end of script, or you can use $conn->close() if preferred.
 ?>

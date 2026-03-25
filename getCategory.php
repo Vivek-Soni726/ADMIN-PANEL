@@ -2,21 +2,7 @@
 // Set header first to ensure the browser expects JSON
 header('Content-Type: application/json');
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    echo json_encode([
-        "success" => false, 
-        "message" => "Database connection failed",
-        "debug" => $conn->connect_error // Optional: only for development
-    ]);
-    exit; // Stop further script execution
-}
+require_once 'adminHeader.php'; 
 
 // Cleaned up the SQL to avoid duplicate Cat_id columns
 $sql = "SELECT 
